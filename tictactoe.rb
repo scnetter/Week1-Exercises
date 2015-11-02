@@ -1,4 +1,3 @@
-# from solution
 require 'pry'
 
 game_ending_messages = {'Player1' => "You have won. Your computer Overlords are not pleased. Not pleased at all. . .",
