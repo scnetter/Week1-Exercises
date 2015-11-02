@@ -66,8 +66,8 @@ b = initialize_board(true)
 
 draw_board(b)
 
-puts "Board positions are mapped as shown."
-puts "Ready to start[press any key]:"
+puts 'Board positions are mapped as shown.'
+puts 'Ready to start[press any key]:'
 gets.chomp
 
 loop do
@@ -86,7 +86,7 @@ loop do
   if winner
     puts get_endgame_message(winner,game_ending_messages).values.sample
   else
-    puts "Tie Game. Cats and Dogs win."
+    puts 'Tie Game. Cats and Dogs win.'
   end
   puts 'Would you like to play again?[Y/N]'
   break if gets.chomp.downcase != 'y'
