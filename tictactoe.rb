@@ -1,5 +1,10 @@
 # from solution
 require 'pry'
+
+game_ending_messages = {'Player1' => "You have won. Your computer Overlords are not pleased. Not pleased at all. . .",
+  'Computer' => 'The Computer won. SkyNet rulz! Take that flesh sack!', 'Player1' => 'You won, but your cat hates you.',
+  'Computer' => 'Play a computer, lose like a sissy - what\'d you expect?'}
+
 def initialize_board(show_space_numbers_bool)
   board = {}
   if !show_space_numbers_bool
@@ -20,9 +25,17 @@ def draw_board(b)
 end
 
 def player_select_square(board)
-  puts 'Pick a square:[1 - 9]:'
-  position = gets.chomp.to_i
-  board[position] = 'X'
+  if empty_squares(board).length == 9
+    puts 'Pick a square:[1 - 9]:'
+    position = gets.chomp.to_i
+    board[position] = 'X'
+  else 
+    begin
+      puts "Please select an available square: #{empty_squares(board).keys}:"
+      position = gets.chomp.to_i
+    end until empty_squares(board).include?(position)
+    board[position] = 'X'
+  end
 end
 
 def empty_squares(board)
@@ -45,25 +58,37 @@ def check_winner(board)
   return nil
 end
 
-b = initialize_board(false)
+def get_endgame_message(winner,game_ending_messages)
+  game_ending_messages.select { |k| k == winner }
+end
+
+b = initialize_board(true)
 
 draw_board(b)
 
+puts "Board positions are mapped as shown."
+puts "Ready to start[press any key]:"
+gets.chomp
 
-begin 
-  player_select_square(b)
-  computer_select_square(b)
+loop do
+  b = initialize_board(false)
   draw_board(b)
-  winner = check_winner(b)
+
+  begin 
+    player_select_square(b)
+    computer_select_square(b)
+    draw_board(b)
+    winner = check_winner(b)
 
 
-end until winner || empty_squares(b).empty?
+  end until winner || empty_squares(b).empty?
 
-if winner == 'Player1'
-  puts "You won!"
-elsif winner
-  puts "Awww! the computer won :("
-else
-  puts "Tie Game. Cats and Dogs win."
+  if winner
+    puts get_endgame_message(winner,game_ending_messages).values.sample
+  else
+    puts "Tie Game. Cats and Dogs win."
+  end
+  puts 'Would you like to play again?[Y/N]'
+  break if gets.chomp.downcase != 'y'
 end
-
+puts 'Thanks for playing.'
