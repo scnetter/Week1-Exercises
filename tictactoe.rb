@@ -1,132 +1,69 @@
+# from solution
 require 'pry'
-# position from 1 to 9
-# initial version comp picks random/open spot
-# determine what constitutes a win. Check each time.
-
-
-# Pick a mark
-
-# draw board with positions labeled
-
-# 1. Ask for position
-
-# 2. draw board with player mark, pause, clear screen and draw board with computer mark
-
-# 3. check for win
-
-# 4. loop back to 1 until winner
-
-# 5. Ask if want to play again (clear board and start again.)
-EXAMPLE_MARKERS = true
-player_mark = ''
-computer_mark = ''
-board_positions = []
-winner = -1 # -1 no winner, 0 Computer Wins, 1 Player wins
-
-
-def initialize_board(board_positions, example_flag)
-  if example_flag
-    (1..9).each {|value| board_positions[value - 1] = value}
+def initialize_board(show_space_numbers_bool)
+  board = {}
+  if !show_space_numbers_bool
+    (1..9).each { |pos| board[pos] = ' '} 
   else
-    (1..9).each {|value| board_positions[value - 1] = ' '}
+    (1..9).each { |pos| board[pos] = pos }
   end
+  board
 end
 
-def draw_board(board_positions)
+def draw_board(b)
   system('clear')
-  puts '     |     |     '
-  puts "  #{board_positions[0]}  |  #{board_positions[1]}  |  #{board_positions[2]}  "
-  puts '     |     |     ' 
-  puts '-----+-----+-----'
-  puts '     |     |     ' 
-  puts "  #{board_positions[3]}  |  #{board_positions[4]}  |  #{board_positions[5]} "
-  puts '     |     |     ' 
-  puts '-----+-----+-----'
-  puts '     |     |     '
-  puts "  #{board_positions[6]}  |  #{board_positions[6]}  |  #{board_positions[8]}  "
-  puts '     |     |     ' 
+  puts "  #{b[1]}  |  #{b[2]}  |  #{b[3]}  "
+  puts "-----------------"
+  puts "  #{b[4]}  |  #{b[5]}  |  #{b[6]}"
+  puts "-----------------"
+  puts "  #{b[7]}  |  #{b[8]}  |  #{b[9]} "
 end
 
-def get_player_position(board_positions)
-  loop do
-    puts "What's your move?[1-9]:"
-    player_position = gets.chomp
-    if (1..9).include?(player_position.to_i) and board_positions[player_position.to_i - 1] == ' '
-      return player_position
-    else
-      puts "You must choose a spot between 1 and 9 that is not already occupied."
+def player_select_square(board)
+  puts 'Pick a square:[1 - 9]:'
+  position = gets.chomp.to_i
+  board[position] = 'X'
+end
+
+def empty_squares(board)
+  board.select {|k,v| v == ' '}
+end
+
+def computer_select_square(board)
+  board[empty_squares(board).keys.sample] = 'O' 
+end
+
+def check_winner(board)
+  winning_lines = [[1,2,3],[4,5,6],[7,8,9],[1,4,7],[2,5,8],[3,6,9],[1,5,9],[3,6,9],[3,5,7]]
+  winning_lines.each do |line|
+    if board[line[0]] == 'X' and board[line[1]] == 'X' and board[line[2]] == 'X'
+      return 'Player1'
+    elsif board[line[0]] == 'O' and board[line[1]] == 'O' and board[line[2]] == 'O'
+      return 'Computer'
     end
   end
+  return nil
 end
 
-def is_winner?(board_positions, mark)
-  if ((board_positions[0] == mark) && (board_positions[1] == mark) && (board_positions[2] == mark)) || 
-    ((board_positions[3] == mark) && (board_positions[4] == mark) && (board_positions[5] == mark))  || 
-    ((board_positions[6] == mark) && (board_positions[7] == mark) && (board_positions[8] == mark))  ||
-    ((board_positions[0] == mark) && (board_positions[3] == mark) && (board_positions[6] == mark))  ||
-    ((board_positions[1] == mark) && (board_positions[4] == mark) && (board_positions[7] == mark))  ||
-    ((board_positions[2] == mark) && (board_positions[6] == mark) && (board_positions[8] == mark))  ||
-    ((board_positions[0] == mark) && (board_positions[4] == mark) && (board_positions[8] == mark))  ||
-    ((board_positions[2] == mark) && (board_positions[4] == mark) && (board_positions[6] == mark)) 
-    true
-  else
-    false
-  end
-end
+b = initialize_board(false)
 
-def computer_pick(board_positions)
-  available_positions = []
-  board_positions.each_index { |index| 
-    if board_positions[index] == ' ' then available_positions << index end
-  }
-  available_positions.sample
-end
-
-def board_full?(board_positions)
-  true if !board_positions.include?(' ')
-  false
-end
+draw_board(b)
 
 
-loop do
+begin 
+  player_select_square(b)
+  computer_select_square(b)
+  draw_board(b)
+  winner = check_winner(b)
 
-  puts "We're going to play Tic Tac Toe - What mark do you want?[X/O]"
-  player_mark = gets.chomp.upcase
-  if player_mark == 'X' || player_mark == 'O'
-    break
-  else
-    puts 'Invalide choice!!'
-  end
-end
 
-player_mark == 'X' ? computer_mark = 'O' : computer_mark = 'X'
+end until winner || empty_squares(b).empty?
 
-loop do
-  system('clear')
-  puts "The Board will look like this. Select positions as numbered when choosing your moves."
-
-  initialize_board(board_positions,EXAMPLE_MARKERS)
-
-  draw_board(board_positions)
-
-  initialize_board(board_positions,!EXAMPLE_MARKERS)
-  loop do 
-    board_positions[get_player_position(board_positions).to_i - 1] = player_mark
-    draw_board(board_positions)
-    board_positions[computer_pick(board_positions)] = computer_mark
-    draw_board(board_positions)
-    if is_winner?(board_positions,player_mark)
-      puts "You won! Our Computer Overlords are not happy."
-      break
-    elsif is_winner?(board_positions, computer_mark)
-      puts "Computer won! Skynet Rulz!"
-      break
-    elsif board_full?(board_positions)
-      puts "Dang. Cat and Dog won :("
-      break
-    end
-  end
-  puts "Do you want to play again?[Y/N]"
-  break if gets.chomp.downcase != 'y' 
+if winner == 'Player1'
+  puts "You won!"
+elsif winner
+  puts "Awww! the computer won :("
+else
+  puts "Tie Game. Cats and Dogs win."
 end
 
