@@ -1,7 +1,7 @@
 require 'pry'
 puts "Welcome to Blackjack!"
 
-def initialize_deck()
+def get_new_deck()
   suits = %w[H D S C]
   cards = %w[2 3 4 5 6 7 8 9 10 J K Q A]
 
@@ -72,7 +72,7 @@ end
 
 begin 
 
-  deck =initialize_deck
+  deck = get_new_deck
   player_cards = []
   dealer_cards = []
   puts 'Dealing initial cards. . .'
