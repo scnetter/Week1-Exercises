@@ -7,9 +7,6 @@ def get_new_deck()
   deck = suits.product(cards).shuffle
 end
 
-player_cards = []
-dealer_cards = []
-
 def deal_card(deck, card_hand)
   card_hand << deck.pop
 end
@@ -18,15 +15,12 @@ def get_total(card_hand)
   total = 0
   aces = 0
   card_hand.each do |card|  
-    if /[123456789]/.match(card[1])
+    if /[1-9]/.match(card[1])
       total += card[1].to_i 
-      next
     elsif /[JKQ]/.match(card[1])
       total += 10 
-      next
     elsif /A/.match(card[1])
       aces += 1 
-      next
     end
   end
   
@@ -79,10 +73,11 @@ begin
   player_cards = []
   dealer_cards = []
   puts 'Dealing initial cards. . .'
-  deal_card(deck,player_cards)
-  deal_card(deck,dealer_cards)
-  deal_card(deck,player_cards)
-  deal_card(deck,dealer_cards)
+
+  2.times do
+    deal_card(deck,player_cards)
+    deal_card(deck,dealer_cards)
+  end
   show_cards(player_cards,"Player1")
 
   loop do
@@ -94,20 +89,17 @@ begin
       next
     elsif hit_or_stay == '1'
       show_cards(deal_card(deck,player_cards), "Player1")
-      if get_total(player_cards) > 21
-        break
-      else
-        next
-      end
+      get_total(player_cards) > 21 ? break : next
     else
       show_cards(player_cards,"Player1")
+      break
     end
-
-    until get_total(dealer_cards) >= 17
-      puts "Dealer draws. . ."
-      show_cards(deal_card(deck,dealer_cards), "Dealer")
-    end
-    break
+  end
+  
+  show_cards(dealer_cards,"Dealer")
+  until get_total(dealer_cards) >= 17
+    puts "Dealer draws. . ."
+    show_cards(deal_card(deck,dealer_cards), "Dealer")
   end
 
   show_winner(dealer_cards,player_cards)
