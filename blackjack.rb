@@ -4,7 +4,6 @@ puts "Welcome to Blackjack!"
 def get_new_deck()
   suits = %w[H D S C]
   cards = %w[2 3 4 5 6 7 8 9 10 J K Q A]
-
   deck = suits.product(cards).shuffle
 end
 
@@ -55,6 +54,10 @@ def show_winner(dealer_cards,player_cards)
     return
   when dealer_total > 21
     puts "Player Wins! - Dealer Bust"
+    return
+  when dealer_total == player_total
+    puts "Dealer wins all ties - House Rules!!"
+    return  
   when dealer_total == 21
     puts "Dealer Wins! - Blackjack!"
     return
