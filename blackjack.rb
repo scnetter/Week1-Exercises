@@ -1,3 +1,6 @@
+# Case where player gets 21 on initial hand
+# Case where player is 21 or Greater, remove option to hit/stay
+
 require 'pry'
 puts "Welcome to Blackjack!"
 
@@ -81,15 +84,16 @@ begin
   show_cards(player_cards,"Player1")
 
   loop do
+    break if get_total(player_cards) == 21
     puts "What would you like to do? 1) Hit 2) Stay:"
 
     hit_or_stay = gets.chomp
-    if hit_or_stay != '1' && hit_or_stay != '2'
+    if !['1','2'].include?(hit_or_stay)
       puts 'You must enter 1) to Hit or 2) to Stay'
       next
     elsif hit_or_stay == '1'
       show_cards(deal_card(deck,player_cards), "Player1")
-      get_total(player_cards) > 21 ? break : next
+      get_total(player_cards) >= 21 ? break : next
     else
       show_cards(player_cards,"Player1")
       break
